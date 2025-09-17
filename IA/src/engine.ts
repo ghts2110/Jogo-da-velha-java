@@ -35,3 +35,18 @@ export function applyMove(board: Board, idx: number, mark: Mark): Board {
   b[idx] = mark;
   return b;
 }
+
+// Regras de término e vencedor
+export function winnerOf(board: Board): Mark | "draw" | null {
+  for (const [a,b,c] of LINES) {
+    if (board[a] && board[a] === board[b] && board[b] === board[c]) return board[a] as Mark;
+  }
+  return board.every(c => c !== "") ? "draw" : null;
+}
+
+export function isTerminal(board: Board): boolean{
+  if(winnerOf(board) != null){
+    return true;
+  }
+  return false;
+}
