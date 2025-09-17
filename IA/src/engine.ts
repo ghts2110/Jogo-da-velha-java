@@ -1,4 +1,4 @@
-// modelagem do estado
+// Modelagem do estado
 export type Mark = "X" | "O";
 export type Cell = "" | Mark;
 export type Board = Cell[]; // 9 posições
@@ -9,3 +9,29 @@ const LINES = [
   [0,4,8],[2,4,6]          // diagonais
 ] as const satisfies readonly (readonly [number, number, number])[];
 
+// Utilitários puros de estado
+export function emptyBoard(): Board {
+  return Array(9).fill("");
+}
+
+export function isValidMove(board: Board, idx: number) {
+  return idx >= 0 && idx < 9 && board[idx] === "";
+}
+
+export function availableMoves(board: Board): number[]{
+  const emptyCell: number[] = []
+
+  for(let i = 0; i < 9; i++){
+    if(board[i] == ""){
+      emptyCell.push(i)
+    }
+  }
+
+  return emptyCell
+}
+
+export function applyMove(board: Board, idx: number, mark: Mark): Board {
+  const b = board.slice();
+  b[idx] = mark;
+  return b;
+}
