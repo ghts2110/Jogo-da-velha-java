@@ -23,7 +23,7 @@ export function availableMoves(board: Board): number[]{
 
   for(let i = 0; i < 9; i++){
     if(board[i] == ""){
-      emptyCell.push(i)
+      emptyCell.push(i+1)
     }
   }
 

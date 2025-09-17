@@ -2,8 +2,9 @@
 import readline from 'node:readline';
 import OpenAI from 'openai';
 import { z } from 'zod';
-import { Board, emptyBoard, isValidMove, applyMove, winnerOf, Mark } from './engine';
+import { Board, emptyBoard, isValidMove, applyMove, winnerOf, Mark, availableMoves } from './engine.js';
 
+const OPENAI_API_KEY="XXXXXXX"
 
 const client = new OpenAI({ apiKey: OPENAI_API_KEY });
 
@@ -85,6 +86,26 @@ function ask(rl: readline.Interface, q: string) {
         level: ${level}
     `.trim();
 
+    const easy = `
+    Você é o agente EASY_MOVE de Jogo da Velha (3x3).
+    Instruções:
+    - Responda SOMENTE com um número de 1 a 9 (sem texto extra, sem espaços, sem quebras adicionais).
+    - O número representa a posição da jogada no tabuleiro, contando da ESQUERDA para a DIREITA e de CIMA para BAIXO.
+    - Não chame nenhuma ferramenta. Não explique nada. Apenas o número final.
+    Objetivo:
+    - Jogada simples (fácil). O cálculo real é responsabilidade da ferramenta; você apenas a invoca e devolve o resultado nesse JSON.
+    `
+
+    const hard = `
+    Você é o agente HARD_MOVE de Jogo da Velha (3x3).
+    Instruções:
+    - Responda SOMENTE com um número de 1 a 9 (sem texto extra, sem espaços, sem quebras adicionais).
+    - O número representa a posição da jogada no tabuleiro, contando da ESQUERDA para a DIREITA e de CIMA para BAIXO.
+    - Não chame nenhuma ferramenta. Não explique nada. Apenas o número final.
+    Objetivo:
+    - Jogada ótima (difícil). O cálculo real é responsabilidade da ferramenta; você apenas a invoca e devolve o resultado nesse JSON.
+    `
+
   let board: Board = emptyBoard();
   const human: Mark = "X";
   const ai: Mark = "O";
@@ -122,23 +143,73 @@ function ask(rl: readline.Interface, q: string) {
 
     // peça para o modelo jogar (ele deve chamar a tool)
     const first = await client.chat.completions.create({
-      model: "gpt-4o-mini", 
+      model: "gpt-4o", 
       messages,
       tools,
       tool_choice: "auto"
     });
 
-    const choice = first.choices[0];
-    if (!choice || !choice.message) {
-        throw new Error("Nenhuma resposta retornada pelo modelo");
-    }
-    const message = choice.message;
+    const msg = first.choices[0]!.message;
+    messages.push(msg)
 
-    // console.log("---------------")
-    // console.log(message.tool_calls)
-    // console.log("---------------")
-    // console.log(message.content)
+    for(const tc of msg.tool_calls!){
+        if(tc.type !== "function"){
+            continue;
+        }
+
+        console.log(tc)
+        console.log("-------------------")
+
+        messages[0] = {role: "assistant", content: tc.function.name == "ai_move_easy" ? easy : hard} 
+
+        messages.push({
+            role: "tool",
+            tool_call_id: tc.id,
+            content: JSON.stringify(first)
+        });
+    }
+
     
+
+    const second = await client.chat.completions.create({
+        model: "gpt-4o", 
+        messages,
+        response_format: {
+            type: "json_schema",
+            json_schema: {
+                name: "OnlyMove",
+                schema: {
+                    type: "object",
+                    additionalProperties: false,
+                    properties: {
+                        move: { type: "integer", enum: availableMoves(board) }
+                    },
+                    required: ["move"]
+                },
+                strict: true
+            }
+        }
+    });
+
+    console.log(messages[0])
+    console.log("-------------------")
+    console.log(second.choices[0]?.message)
+
+    const { move } = JSON.parse(second.choices[0]?.message.content!);
+
+    board = applyMove(board, move-1, ai);
+    const afterIA = winnerOf(board);
+    draw(board);
+
+    messages.push({
+        role: "assistant",
+        content: JSON.stringify({ event: "ai_move", move, board })
+    });
+
+    if (afterIA != null) {
+      console.log(afterIA === "draw" ? "Deu velha!" : `IA venceu!`);
+      break;
+    }
   }
 
   rl.close();
