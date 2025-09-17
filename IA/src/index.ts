@@ -4,7 +4,6 @@ import OpenAI from 'openai';
 import { z } from 'zod';
 import { Board, emptyBoard, isValidMove, applyMove, winnerOf, Mark } from './engine';
 
-const OPENAI_API_KEY=""
 
 const client = new OpenAI({ apiKey: OPENAI_API_KEY });
 

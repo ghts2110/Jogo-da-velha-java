@@ -1,22 +1,32 @@
 {
-  "name": "ia",
+  "name": "jogo-da-velha-java",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts",
+    "dev": "tsx src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ghts2110/Jogo-da-velha-java.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "bugs": {
+    "url": "https://github.com/ghts2110/Jogo-da-velha-java/issues"
+  },
+  "homepage": "https://github.com/ghts2110/Jogo-da-velha-java#readme",
   "dependencies": {
+    "dotenv": "^17.2.2",
     "openai": "^5.20.3",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^24.5.1",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2"
-  }
+  },
+  "description": "",
+  "type": "module"
 }
