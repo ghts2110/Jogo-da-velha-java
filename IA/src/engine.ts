@@ -50,3 +50,12 @@ export function isTerminal(board: Board): boolean{
   }
   return false;
 }
+
+// Gestão de turno
+export function nextPlayer(board: Board, first: Mark = "X", turn: number): Mark{
+  if(turn % 2 == 0){
+    return first;
+  }
+
+  return first == "X" ? "O" : "X";
+}
