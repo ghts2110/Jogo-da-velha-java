@@ -20,6 +20,7 @@
         <script>
             const screen = document.getElementById('screen');
             const context = screen.getContext('2d');
+            const currentPlayerId = 'player1';
 
             const game = {
                 players: {
@@ -29,6 +30,31 @@
                 fruits: {
                     fruit1: { x: 3, y: 1}
                 }
+            }
+
+            document.addEventListener('keydown', handleKeydown);
+            
+            function handleKeydown(event){
+                const keyPressed = event.key;
+                const player = game.players[currentPlayerId];
+
+                const movingObject = {
+                    'ArrowUp': {x: 0, y: -1},
+                    'ArrowRight': {x: 1, y: 0},
+                    'ArrowDown': {x: 0, y: 1},
+                    'ArrowLeft': {x: -1, y: 0}
+                }
+
+                if(keyPressed){
+                    player.x += movingObject[keyPressed].x;
+                    player.y += movingObject[keyPressed].y;
+                    
+                    if(player.x < 0) player.x = 0;
+                    if(player.x > 9) player.x = 9;
+                    if(player.y < 0) player.y = 0;
+                    if(player.y > 9) player.y = 9;
+                }
+
             }
             
             readScreen();
