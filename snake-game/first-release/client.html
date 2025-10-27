@@ -25,15 +25,32 @@
             // movevent
             function createGame(){
                  const state = {
-                    players: {
-                        "player1": { x: 1, y: 1},
-                        "player2": { x: 9, y: 9}
-                    },
+                    players: {},
                     fruits: {
                         fruit1: { x: 3, y: 1}
                     }
                 }
 
+                // adicionar jogador
+                function addPlayer(command){
+                    const playerId = command.playerId;
+                    const playerX = command.palyerX;
+                    const playerY = command.playerY;
+        
+                    state.players[playerId] = {
+                        x: playerX,
+                        y: playerY
+                    }
+                }
+
+                // remover jogador
+                function removePlayer(command) {
+                    const playerId = command.playerId;
+
+                    delete state.players[playerId];
+                }
+
+                // mover
                 function movePlayer(command){
                     const acceptedMoves = {
                         ArrowUp(player){
@@ -54,25 +71,16 @@
                     const player = state.players[command.playerId];
                     const moveFunction = acceptedMoves[keyPressed];
                     
-                    if(moveFunction){
+                    if(player && moveFunction){
                         moveFunction(player);
-                    }
-                    return;
-
-                    if(keyPressed){
-                        player.x += movingObject[keyPressed].x;
-                        player.y += movingObject[keyPressed].y;
-                        
-                        if(player.x < 0) player.x = 0;
-                        if(player.x > 9) player.x = 9;
-                        if(player.y < 0) player.y = 0;
-                        if(player.y > 9) player.y = 9;
                     }
                 }
 
                 return {
                     movePlayer,
-                    state
+                    state,
+                    addPlayer,
+                    movePlayer,
                 }
             }
 
