@@ -22,55 +22,77 @@
             const context = screen.getContext('2d');
             const currentPlayerId = 'player1';
 
-            const game = {
-                players: {
-                    "player1": { x: 1, y: 1},
-                    "player2": { x: 9, y: 9}
-                },
-                fruits: {
-                    fruit1: { x: 3, y: 1}
+            // movevent
+            function createGame(){
+                 const state = {
+                    players: {
+                        "player1": { x: 1, y: 1},
+                        "player2": { x: 9, y: 9}
+                    },
+                    fruits: {
+                        fruit1: { x: 3, y: 1}
+                    }
+                }
+
+                function movePlayer(command){
+                    const keyPressed = command.keyPressed;
+                    const player = state.players[command.playerId];
+
+                    const movingObject = {
+                        'ArrowUp': {x: 0, y: -1},
+                        'ArrowRight': {x: 1, y: 0},
+                        'ArrowDown': {x: 0, y: 1},
+                        'ArrowLeft': {x: -1, y: 0}
+                    } 
+
+                    if(keyPressed){
+                        player.x += movingObject[keyPressed].x;
+                        player.y += movingObject[keyPressed].y;
+                        
+                        if(player.x < 0) player.x = 0;
+                        if(player.x > 9) player.x = 9;
+                        if(player.y < 0) player.y = 0;
+                        if(player.y > 9) player.y = 9;
+                    }
+                }
+
+                return {
+                    movePlayer,
+                    state
                 }
             }
 
+            const game = createGame();
+
+            // input
             document.addEventListener('keydown', handleKeydown);
             
             function handleKeydown(event){
                 const keyPressed = event.key;
-                const player = game.players[currentPlayerId];
 
-                const movingObject = {
-                    'ArrowUp': {x: 0, y: -1},
-                    'ArrowRight': {x: 1, y: 0},
-                    'ArrowDown': {x: 0, y: 1},
-                    'ArrowLeft': {x: -1, y: 0}
+                const command = {
+                    playerId: 'player1',
+                    keyPressed
                 }
 
-                if(keyPressed){
-                    player.x += movingObject[keyPressed].x;
-                    player.y += movingObject[keyPressed].y;
-                    
-                    if(player.x < 0) player.x = 0;
-                    if(player.x > 9) player.x = 9;
-                    if(player.y < 0) player.y = 0;
-                    if(player.y > 9) player.y = 9;
-                }
-
+                game.movePlayer(command);
             }
-            
+
+            // renderizar
             readScreen();
 
             function readScreen(){
                 context.fillStyle = 'white';
                 context.clearRect(0, 0, 10, 10);
 
-                for(const playerId in game.players){
-                    const player = game.players[playerId];
+                for(const playerId in game.state.players){
+                    const player = game.state.players[playerId];
                     context.fillStyle = 'red';
                     context.fillRect(player.x, player.y, 1, 1);
                 }
 
-                for(const fruitId in game.fruits){
-                    const fruit = game.fruits[fruitId];
+                for(const fruitId in game.state.fruits){
+                    const fruit = game.state.fruits[fruitId];
                     context.fillStyle = 'green';
                     context.fillRect(fruit.x, fruit.y, 1, 1);
                 }
