@@ -26,15 +26,13 @@
             function createGame(){
                  const state = {
                     players: {},
-                    fruits: {
-                        fruit1: { x: 3, y: 1}
-                    }
+                    fruits: {}
                 }
 
                 // adicionar jogador
                 function addPlayer(command){
                     const playerId = command.playerId;
-                    const playerX = command.palyerX;
+                    const playerX = command.playerX;
                     const playerY = command.playerY;
         
                     state.players[playerId] = {
@@ -87,11 +85,25 @@
                     }
 
                     const keyPressed = command.keyPressed;
+                    const playerId = command.playerId;
                     const player = state.players[command.playerId];
                     const moveFunction = acceptedMoves[keyPressed];
                     
                     if(player && moveFunction){
                         moveFunction(player);
+                        checkForFruitCollision(playerId);
+                    }
+                }
+
+                function checkForFruitCollision(playerId){
+                    const player = state.players[playerId];
+
+                    for(const fruitId in state.fruits){
+                        const fruit = state.fruits[fruitId];
+
+                        if(player.x === fruit.x && player.y === fruit.y){
+                            removeFruit({fruitId: fruitId});
+                        }
                     }
                 }
 
@@ -99,7 +111,9 @@
                     movePlayer,
                     state,
                     addPlayer,
-                    movePlayer,
+                    removePlayer,
+                    addFruit,
+                    removeFruit
                 }
             }
 
@@ -108,6 +122,9 @@
             // input
             const keyBoardListener = createKeyboardListener();
             keyBoardListener.subscribe(game.movePlayer);
+
+            game.addPlayer({playerId: "player1", playerX: 0, playerY: 0});
+            game.addFruit({playerId: "fruit1", fruitX: 4, fruitY: 5});
 
             function createKeyboardListener(){
                 const state = {
