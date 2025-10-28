@@ -26,20 +26,23 @@
 
             const game = createGame();
             const keyBoardListener = createKeyboardListener(document);
-            keyBoardListener.subscribe(game.movePlayer);
-
-            const screen = document.getElementById('screen');
-            readScreen(screen, game, requestAnimationFrame);
 
             const socket = io();
 
             socket.on('connect', () => {
                 const playerId = socket.id;
                 console.log(`Player connected on Client with id: ${playerId}`);
+
+                const screen = document.getElementById('screen');
+                readScreen(screen, game, requestAnimationFrame, playerId);
             });
 
             socket.on('setup', (state) => {
+                const playerId = socket.id;
                 game.setState(state);
+
+                keyBoardListener.registerPlayerId(playerId);
+                keyBoardListener.subscribe(game.movePlayer);
             });
 
             socket.on('add-player', (command) => {

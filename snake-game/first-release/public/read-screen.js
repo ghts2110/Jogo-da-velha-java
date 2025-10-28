@@ -1,4 +1,4 @@
-export default function readScreen(screen, game, requestAnimationFrame){
+export default function readScreen(screen, game, requestAnimationFrame, currentPlayerId){
     const context = screen.getContext('2d');
     context.fillStyle = 'white';
     context.clearRect(0, 0, 10, 10);
@@ -15,7 +15,14 @@ export default function readScreen(screen, game, requestAnimationFrame){
         context.fillRect(fruit.x, fruit.y, 1, 1);
     }
 
+    const currentPlayer = game.state.players[currentPlayerId];
+
+    if(currentPlayer){
+        context.fillStyle = '#F0DB4F';
+        context.fillRect(currentPlayer.x, currentPlayer.y, 1, 1);
+    }
+
     requestAnimationFrame(() => {
-        readScreen(screen, game, requestAnimationFrame);
+        readScreen(screen, game, requestAnimationFrame, currentPlayerId);
     });
 }
