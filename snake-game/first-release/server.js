@@ -11,11 +11,22 @@ app.use(express.static('public'));
 
 const game = createGame();
 
+game.subscribe((command) => {
+    console.log(`> Emitting ${command.type}`);
+    sockets.emit(command.type, command);
+});
+
 sockets.on('connection', (socket) => {
     const playerId = socket.id;
     console.log(`> Player connected on Server with id: ${playerId}`)
 
+    game.addPlayer({playerId: playerId})
     socket.emit('setup', game.state);
+
+    socket.on('disconnect', () => {
+        game.removePlayer({playerId: playerId});
+        console.log(`> Player disconnected: ${playerId}`);
+    });
 });
 
 server.listen(3000, () => {
