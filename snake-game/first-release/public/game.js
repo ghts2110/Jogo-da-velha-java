@@ -8,6 +8,12 @@ export default function createGame(){
         }
     }
 
+    function start(){
+        const frequency = 2000;
+        
+        setInterval(addFruit, frequency)
+    }
+
     // observer
     const observers = [];
 
@@ -59,14 +65,22 @@ export default function createGame(){
 
     // adicionar fruta
     function addFruit(command) {
-        const fruitId = command.fruitId;
-        const fruitX = command.fruitX;
-        const fruitY = command.fruitY;
+        const fruitId = command ? command.fruitId : Math.floor(Math.random() * 10000000);
+        const fruitX = command ? command.fruitX : Math.floor(Math.random() * state.screen.width);
+        const fruitY = command ? command.fruitY : Math.floor(Math.random() * state.screen.height);
+
 
         state.fruits[fruitId] = {
             x: fruitX,
             y: fruitY
         }
+
+         notifyAll({
+            type: 'add-fruit',
+            fruitId: fruitId,
+            fruitX: fruitX,
+            fruitY: fruitY
+        });
     }
 
     // remover fruta
@@ -74,6 +88,11 @@ export default function createGame(){
         const fruitId = command.fruitId;
 
         delete state.fruits[fruitId];
+
+        notifyAll({
+            type: 'remove-fruit',
+            fruitId: fruitId,
+        });
     }
 
     // mover
@@ -126,6 +145,7 @@ export default function createGame(){
         addFruit,
         removeFruit,
         setState,
-        subscribe
+        subscribe,
+        start
     }
 }
