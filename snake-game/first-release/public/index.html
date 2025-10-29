@@ -43,6 +43,9 @@
 
                 keyBoardListener.registerPlayerId(playerId);
                 keyBoardListener.subscribe(game.movePlayer);
+                keyBoardListener.subscribe((command) => {
+                    socket.emit(command.type, command);
+                });
             });
 
             socket.on('add-player', (command) => {
@@ -51,6 +54,14 @@
 
             socket.on('remove-player', (command) => {
                 game.removePlayer(command);
+            });
+
+            socket.on('move-player', (command) => {
+                const playerId = socket.id;
+
+                if(playerId !== command.playerId){
+                    game.movePlayer(command);
+                }
             });
         </script>
     </body>
