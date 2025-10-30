@@ -12,6 +12,9 @@ app.use(express.static('public'));
 const game = createGame();
 game.start();
 
+game.state.screen.width = 20;
+game.state.screen.height = 20;
+
 game.subscribe((command) => {
     console.log(`> Emitting ${command.type}`);
     sockets.emit(command.type, command);
