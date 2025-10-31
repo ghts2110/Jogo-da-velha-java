@@ -4,7 +4,7 @@
         <title>Snake Game</title>
 
         <style>
-            #screen {
+            #gameScreen {
                 border: 10px solid #CCC;
                 image-rendering: pixelated;
                 image-rendering: crisp-edges;
@@ -12,17 +12,26 @@
                 width: 400px;
                 height: 400px;
             }
+            #scoreScreen {
+                border: 10px solid #CCC;
+                image-rendering: pixelated;
+                image-rendering: crisp-edges;
+                image-rendering: -moz-crisp-edges;
+                width: 200px;
+                height: 400px;
+            }
         </style>
 
         <script src="/socket.io/socket.io.js"></script>
     </head>
     <body>
-        <canvas id="screen"></canvas>
+        <canvas id="gameScreen"></canvas>
+        <canvas id="scoreScreen"></canvas>
 
         <script type="module">
             import createKeyboardListener from "./keyboard-listener.js"
             import createGame from "./game.js"
-            import readScreen from "./read-screen.js"
+            import {readScreen, readScoreScreen} from "./read-screen.js"
 
             const game = createGame();
             const keyBoardListener = createKeyboardListener(document);
@@ -33,8 +42,11 @@
                 const playerId = socket.id;
                 console.log(`Player connected on Client with id: ${playerId}`);
 
-                const screen = document.getElementById('screen');
-                readScreen(screen, game, requestAnimationFrame, playerId);
+                const gameScreen = document.getElementById('gameScreen');
+                readScreen(gameScreen, game, requestAnimationFrame, playerId);
+
+                const scoreScreen = document.getElementById('scoreScreen');
+                readScoreScreen(scoreScreen, game, requestAnimationFrame, playerId);
             });
 
             socket.on('setup', (state) => {
