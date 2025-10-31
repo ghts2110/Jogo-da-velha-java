@@ -41,6 +41,7 @@
                 const playerId = socket.id;
                 game.setState(state);
 
+                keyBoardListener.unsubscribeAll();
                 keyBoardListener.registerPlayerId(playerId);
                 keyBoardListener.subscribe(game.movePlayer);
                 keyBoardListener.subscribe((command) => {
