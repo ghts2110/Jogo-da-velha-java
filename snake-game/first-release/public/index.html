@@ -65,6 +65,10 @@
                 }
             });
 
+            socket.on('add-score', (command) => {
+                game.addScore(command);
+            });
+
             socket.on('add-fruit', (command) => {
                 game.addFruit(command);
             });

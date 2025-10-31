@@ -17,8 +17,6 @@ export default function createKeyboardListener(document){
     }
 
     function notifyAll(command){
-        console.log(state.observers);
-
         for (const observerFunction of state.observers){
             observerFunction(command);
         }
